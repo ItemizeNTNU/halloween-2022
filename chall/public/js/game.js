@@ -1,14 +1,16 @@
 import Tile from "./tile.js";
 import Player from "./player.js";
 import Box from "./box.js";
+import { lerp } from "./utils.js";
 import { MAP, WIDTH, HEIGHT, TILE_SIZE } from "./constants.js";
 
 export default class Game {
 	constructor() {
 		this.tiles = [];
 		this.locations = [];
-		this.player = null;
+		this.player = new Player(0, 0, TILE_SIZE, TILE_SIZE, "tomato");
 		this.loadLevel(MAP);
+		this.scroll = { x: 0, y: 0 };
 	}
 
 	loadLevel(level) {
@@ -78,6 +80,18 @@ export default class Game {
 
 	draw(ctx) {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+		this.scroll.x = parseInt(
+			lerp(
+				this.scroll.x,
+				WIDTH / 2 - this.player.x * TILE_SIZE - TILE_SIZE,
+				0.05
+			)
+		);
+		this.scroll.y = parseInt(
+			lerp(this.scroll.y, HEIGHT / 2 - this.player.y * TILE_SIZE, 0.05)
+		);
+		ctx.save();
+		ctx.translate(this.scroll.x, this.scroll.y);
 		let correct = 0;
 		for (const location of this.locations) {
 			location.draw(ctx);
@@ -92,5 +106,6 @@ export default class Game {
 			console.log("WIN");
 		}
 		this.player.draw(ctx);
+		ctx.restore();
 	}
 }
