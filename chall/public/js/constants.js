@@ -8,4 +8,5 @@ export const MAP = `####
 
 export const WIDTH = 640;
 export const HEIGHT = 420;
-export const TILE_SIZE = 32;
+export const TILE_SIZE = 40;
+export const DEBUG = false;

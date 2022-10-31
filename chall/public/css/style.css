@@ -23,6 +23,12 @@ canvas {
 	background-color: #181526;
 	width: 640px;
 	height: 420px;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	-ms-interpolation-mode: nearest-neighbor;
 }
 
 .transition {

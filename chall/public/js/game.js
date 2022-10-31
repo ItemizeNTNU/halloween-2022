@@ -1,6 +1,7 @@
 import Tile from "./tile.js";
 import Player from "./player.js";
 import Box from "./box.js";
+import Location from "./location.js";
 import { lerp } from "./utils.js";
 import { MAP, WIDTH, HEIGHT, TILE_SIZE } from "./constants.js";
 
@@ -34,10 +35,10 @@ export default class Game {
 					tiles.push(new Tile(x, y, TILE_SIZE, TILE_SIZE, "black"));
 				} else if (tile === ".") {
 					// Open
-					locations.push(new Tile(x, y, TILE_SIZE, TILE_SIZE, "aqua"));
+					locations.push(new Location(x, y, TILE_SIZE, TILE_SIZE, "aqua"));
 				} else if (tile === "*") {
 					// Placed
-					locations.push(new Tile(x, y, TILE_SIZE, TILE_SIZE, "aqua"));
+					locations.push(new Location(x, y, TILE_SIZE, TILE_SIZE, "aqua"));
 					tiles.push(new Box(x, y, TILE_SIZE, TILE_SIZE, "blue"));
 				} else if (tile === "$") {
 					// Box
@@ -95,7 +96,6 @@ export default class Game {
 		this.scroll.y = parseInt(
 			lerp(this.scroll.y, HEIGHT / 2 - this.player.y * TILE_SIZE, 0.05)
 		);
-		ctx.save();
 		ctx.translate(this.scroll.x, this.scroll.y);
 		// Draw tiles
 		let correct = 0;
@@ -118,7 +118,7 @@ export default class Game {
 			this.transition.y += 20;
 			this.transition.element.style.transform = `translate(-50%, ${this.transition.y}px)`;
 		}
-		this.player.draw(ctx);
-		ctx.restore();
+		this.player.draw(ctx, this.scroll);
+		ctx.translate(-this.scroll.x, -this.scroll.y);
 	}
 }

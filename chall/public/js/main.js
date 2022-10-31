@@ -1,6 +1,7 @@
 import Game from "./game.js";
 
 const ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 const game = new Game(transition);
 window.game = game;
 
