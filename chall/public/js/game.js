@@ -68,14 +68,6 @@ export default class Game {
 		if (canMove) {
 			this.player.x += px;
 			this.player.y += py;
-
-			smoke({
-				x: this.player.x * TILE_SIZE + 20,
-				y: this.player.y * TILE_SIZE + 35,
-				size: 0.5,
-				amount: 50,
-				particleArr: this.particles,
-			});
 		}
 	}
 
@@ -90,6 +82,13 @@ export default class Game {
 			}
 		}
 		if (canMove) {
+			smoke({
+				x: box.x * TILE_SIZE + 20,
+				y: box.y * TILE_SIZE + 35,
+				size: 1,
+				amount: 50,
+				particleArr: this.particles,
+			});
 			box.x += px;
 			box.y += py;
 		}
