@@ -5,12 +5,19 @@ import { lerp } from "./utils.js";
 import { MAP, WIDTH, HEIGHT, TILE_SIZE } from "./constants.js";
 
 export default class Game {
-	constructor() {
+	constructor(transition) {
 		this.tiles = [];
 		this.locations = [];
 		this.player = new Player(0, 0, TILE_SIZE, TILE_SIZE, "tomato");
 		this.loadLevel(MAP);
 		this.scroll = { x: 0, y: 0 };
+		this.transition = { element: transition, y: 200 };
+		this.toggleTransition();
+	}
+
+	toggleTransition() {
+		this.transition.y = -1400;
+		this.transition.element.style.transform = `translate(-50%, ${this.transition.y}px)`;
 	}
 
 	loadLevel(level) {
@@ -79,19 +86,18 @@ export default class Game {
 	}
 
 	draw(ctx) {
+		// Clear screen
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+		// Camera scroll
 		this.scroll.x = parseInt(
-			lerp(
-				this.scroll.x,
-				WIDTH / 2 - this.player.x * TILE_SIZE - TILE_SIZE,
-				0.05
-			)
+			lerp(this.scroll.x, WIDTH / 2 - this.player.x * TILE_SIZE, 0.05)
 		);
 		this.scroll.y = parseInt(
 			lerp(this.scroll.y, HEIGHT / 2 - this.player.y * TILE_SIZE, 0.05)
 		);
 		ctx.save();
 		ctx.translate(this.scroll.x, this.scroll.y);
+		// Draw tiles
 		let correct = 0;
 		for (const location of this.locations) {
 			location.draw(ctx);
@@ -102,8 +108,15 @@ export default class Game {
 				if (tile.x === location.x && tile.y === location.y) correct += 1;
 			}
 		}
+		// Check win condition
 		if (correct === this.locations.length) {
 			console.log("WIN");
+		}
+
+		// Transition
+		if (this.transition.y < 200) {
+			this.transition.y += 20;
+			this.transition.element.style.transform = `translate(-50%, ${this.transition.y}px)`;
 		}
 		this.player.draw(ctx);
 		ctx.restore();

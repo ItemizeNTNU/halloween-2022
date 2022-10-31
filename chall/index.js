@@ -3,11 +3,16 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import Database from "better-sqlite3";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
-import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
+import {
+	uniqueNamesGenerator,
+	adjectives,
+	colors,
+	animals,
+} from "unique-names-generator";
 
-const KEY = "BoOOoooOOOoOOoOoOOooooOOoooOOooOOOoooooOOooooooOOoooooOOOOoooOo"
+const KEY = "BoOOoooOOOoOOoOoOOooooOOoooOOooOOOoooooOOooooooOOoooooOOOOoooOo";
 const db = new Database("db.sqlite3");
 db.exec(`DROP TABLE IF EXISTS users;`);
 db.exec(`CREATE TABLE IF NOT EXISTS users(
@@ -21,8 +26,8 @@ db.exec(`INSERT INTO users (id, name, levels) VALUES (
 
 // Helper functions
 const generateToken = (id) => {
-	return jwt.sign({id: id}, KEY);
-}
+	return jwt.sign({ id: id }, KEY);
+};
 const parseAuth = (req, _res) => {
 	const { auth: token } = req.cookies;
 	try {
@@ -34,9 +39,9 @@ const parseAuth = (req, _res) => {
 	const query = `SELECT id FROM users WHERE id=?;`;
 	try {
 		const user = db.prepare(query).get(auth.id);
-		if (user) return user
+		if (user) return user;
 	} catch (error) {
-		return null
+		return null;
 	}
 	return null;
 };
@@ -57,20 +62,25 @@ app.use(express.static("public"));
 app.get("/", (req, res) => {
 	const user = parseAuth(req, res);
 	if (!user) {
-		const id = uuidv4()
-		const name = uniqueNamesGenerator({dictionaries: [adjectives, colors, animals], separator: '-', length: 2});
-		console.log(id, name)
+		const id = uuidv4();
+		const name = uniqueNamesGenerator({
+			dictionaries: [adjectives, colors, animals],
+			separator: "-",
+			length: 2,
+		});
+		console.log(id, name);
 		db.exec(`INSERT INTO users (id, name, levels) VALUES (
 			'${id}', '${name}', 0
 		)`);
 		res.cookie("auth", generateToken(id));
 	}
-	return res.render("index");
+	//return res.render("index");
+	return res.render("game");
 });
 
 app.get("/game", (req, res) => {
 	const user = parseAuth(req, res);
-	if (!user) res.redirect("/")
+	if (!user) res.redirect("/");
 	return res.render("game", { user: user });
 });
 

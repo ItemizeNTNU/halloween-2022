@@ -1,7 +1,7 @@
 import Game from "./game.js";
 
 const ctx = canvas.getContext("2d");
-const game = new Game();
+const game = new Game(transition);
 window.game = game;
 
 const keyDownHandler = (event) => {
