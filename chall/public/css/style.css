@@ -65,6 +65,7 @@ canvas {
 	width: 640px;
 	height: 420px;
 	z-index: 1;
+	transition: opacity 1s;
 }
 #levels {
 	display: flex;
@@ -116,7 +117,7 @@ canvas {
 .level-btn:hover {
 	filter: brightness(0.7);
 }
-.level-btn:focus {
+.level-btn:active {
 	filter: brightness(0.5);
 }
 .level-btn.disabled {
@@ -179,7 +180,7 @@ canvas {
 .navigation > button:hover {
 	filter: brightness(0.7);
 }
-.navigation > button:focus {
+.navigation > button:active {
 	filter: brightness(0.5);
 }
 .menu-btn {
