@@ -8,3 +8,14 @@ export const getRGBColor = (color) => {
 	}
 	return color;
 };
+export const fetchAsync = async (url, method = "GET") => {
+	const response = await fetch(url, {
+		method: method,
+	});
+	const data = await response.json();
+	return data;
+};
+export const loadLevels = async () => {
+	const levels = await fetchAsync("/api/levels");
+	return levels;
+};

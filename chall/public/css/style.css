@@ -3,6 +3,18 @@
 	margin: 0;
 	box-sizing: border-box;
 }
+@font-face {
+	font-family: "m6x11";
+	font-style: normal;
+	font-weight: 400;
+	src: url(/fonts/m6x11.ttf) format("truetype");
+}
+html {
+	--font: "m6x11", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	font-family: var(--font);
+	color: #e23c46;
+	background-color: #110e1c;
+}
 
 .wrapper {
 	display: flex;
@@ -15,6 +27,7 @@
 	overflow: hidden;
 	width: 640px;
 	height: 420px;
+	border-radius: 8px;
 }
 
 canvas {
@@ -36,10 +49,151 @@ canvas {
 	width: 100%;
 	height: 100%;
 	z-index: 5;
+	pointer-events: none;
 }
 .transition svg {
 	position: absolute;
 	left: 50%;
 	right: 50%;
 	transform: translate(-50%, -1400px);
+}
+
+.window {
+	position: absolute;
+	display: flex;
+	background-color: #181526;
+	width: 640px;
+	height: 420px;
+	z-index: 1;
+}
+#levels {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding-top: 50px;
+}
+#levels > h1 {
+	position: absolute;
+	top: 30px;
+	font-size: 3rem;
+	text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000,
+		3px 3px 0 #000;
+}
+.normal-levels {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	grid-gap: 20px;
+}
+.bonus-levels {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 20px;
+	justify-items: center;
+	margin-top: 20px;
+}
+.level-btn {
+	width: 50px;
+	height: 50px;
+	border: none;
+	display: flex;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+	font-family: var(--font);
+	font-size: 1.3rem;
+	background-image: url("/images/button.png");
+	background-color: transparent;
+	background-size: 100% 100%;
+	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: crisp-edges;
+	transition: filter 0.2s;
+	cursor: pointer;
+	color: #e3d6ad;
+	margin-bottom: 15px;
+}
+.level-btn:hover {
+	filter: brightness(0.7);
+}
+.level-btn:focus {
+	filter: brightness(0.5);
+}
+.level-btn.disabled {
+	filter: brightness(0.9) grayscale(0.9);
+}
+.level-btn::after {
+	content: "";
+	position: absolute;
+	bottom: -26px;
+}
+.level-btn.disabled::after {
+	content: "WIP";
+}
+.level-btn.one::after {
+	content: "*";
+}
+.level-btn.two::after {
+	content: "* *";
+}
+.level-btn.three::after {
+	content: "* * *";
+}
+
+.navigation {
+	position: absolute;
+	display: flex;
+	top: 5px;
+	left: 5px;
+}
+.navigation > button {
+	width: 36px;
+	height: 36px;
+	border: none;
+	display: flex;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+	font-family: var(--font);
+	font-size: 1.3rem;
+	background-image: url("/images/button.png");
+	background-color: transparent;
+	background-size: 100% 100%;
+	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: crisp-edges;
+	transition: filter 0.2s;
+	cursor: pointer;
+	color: #e3d6ad;
+	z-index: 1;
+	margin-right: 5px;
+}
+.navigation.right {
+	left: auto;
+	right: 5px;
+}
+.navigation.right > button {
+	margin-right: 0px;
+	margin-left: 5px;
+}
+.navigation > button:hover {
+	filter: brightness(0.7);
+}
+.navigation > button:focus {
+	filter: brightness(0.5);
+}
+.menu-btn {
+	background-image: url("/images/menu.png") !important;
+}
+.reset-btn {
+	background-image: url("/images/reset2.png") !important;
+}
+.shop-btn {
+	background-image: url("/images/shop.png") !important;
+}
+.scoreboard-btn {
+	background-image: url("/images/scoreboard.png") !important;
+}
+.flag-btn {
+	background-image: url("/images/flag.png") !important;
 }

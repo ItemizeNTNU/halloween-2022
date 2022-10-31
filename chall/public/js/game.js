@@ -15,7 +15,7 @@ export default class Game {
 		this.loadLevel(MAP);
 		this.scroll = { x: 0, y: 0 };
 		this.transition = { element: transition, y: 200 };
-		this.toggleTransition();
+		this.loadedLevel = MAP;
 	}
 
 	toggleTransition() {
@@ -23,7 +23,12 @@ export default class Game {
 		this.transition.element.style.transform = `translate(-50%, ${this.transition.y}px)`;
 	}
 
+	reset() {
+		this.loadLevel(this.loadedLevel);
+	}
+
 	loadLevel(level) {
+		this.loadedLevel = level;
 		const tiles = [];
 		const locations = [];
 		for (let y = 0; y < level.length; y++) {

@@ -1,5 +1,7 @@
 import Game from "./game.js";
+import { fetchAsync, loadLevels } from "./utils.js";
 
+// Game window
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
 const game = new Game(transition);
@@ -23,3 +25,26 @@ const draw = () => {
 	requestAnimationFrame(draw);
 };
 requestAnimationFrame(draw);
+
+// Scoreboard window
+
+// Shop window
+
+// Levels window
+const levelButtons = document.querySelectorAll(
+	"button.level-btn:not(.disabled)"
+);
+for (let i = 0; i < levelButtons.length; i++) {
+	const button = levelButtons[i];
+	button.addEventListener("click", async () => {
+		const data = await fetchAsync(`/api/levels/${i + 1}`);
+		console.log(i + 1, data);
+		game.loadLevel(data.level);
+		game.toggleTransition();
+	});
+}
+console.log(123);
+const scores = await loadLevels();
+for (const score of scores.levels) {
+	levelButtons[score.level - 1].className = `level-btn ${score.stars}`;
+}
