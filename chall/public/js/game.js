@@ -3,12 +3,14 @@ import Player from "./player.js";
 import Box from "./box.js";
 import Location from "./location.js";
 import { lerp } from "./utils.js";
+import { smoke, energy } from "./particle.js";
 import { MAP, WIDTH, HEIGHT, TILE_SIZE } from "./constants.js";
 
 export default class Game {
 	constructor(transition) {
 		this.tiles = [];
 		this.locations = [];
+		this.particles = [];
 		this.player = new Player(0, 0, TILE_SIZE, TILE_SIZE, "tomato");
 		this.loadLevel(MAP);
 		this.scroll = { x: 0, y: 0 };
@@ -66,6 +68,14 @@ export default class Game {
 		if (canMove) {
 			this.player.x += px;
 			this.player.y += py;
+
+			smoke({
+				x: this.player.x * TILE_SIZE + 20,
+				y: this.player.y * TILE_SIZE + 35,
+				size: 0.5,
+				amount: 50,
+				particleArr: this.particles,
+			});
 		}
 	}
 
@@ -102,10 +112,27 @@ export default class Game {
 		for (const location of this.locations) {
 			location.draw(ctx);
 		}
+
+		// Draw particles
+		for (let i = this.particles.length - 1; i >= 0; i--) {
+			const particle = this.particles[i];
+			particle.update();
+			particle.draw(ctx);
+			if (particle.lifeTime <= 0) this.particles.splice(i, 1);
+		}
 		for (const tile of this.tiles) {
 			tile.draw(ctx);
 			for (const location of this.locations) {
-				if (tile.x === location.x && tile.y === location.y) correct += 1;
+				if (tile.x === location.x && tile.y === location.y) {
+					correct += 1;
+					energy({
+						x: tile.x * TILE_SIZE + 20,
+						y: tile.y * TILE_SIZE + 20,
+						size: 0.1,
+						amount: 25,
+						particleArr: this.particles,
+					});
+				}
 			}
 		}
 		// Check win condition
