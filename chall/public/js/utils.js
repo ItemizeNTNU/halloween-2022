@@ -15,7 +15,3 @@ export const fetchAsync = async (url, method = "GET") => {
 	const data = await response.json();
 	return data;
 };
-export const loadLevels = async () => {
-	const levels = await fetchAsync("/api/levels");
-	return levels;
-};

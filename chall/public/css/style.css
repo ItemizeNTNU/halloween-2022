@@ -15,7 +15,6 @@ html {
 	color: #e23c46;
 	background-color: #110e1c;
 }
-
 .wrapper {
 	display: flex;
 	justify-content: center;
@@ -30,6 +29,7 @@ html {
 	border-radius: 8px;
 }
 
+/* Canvas */
 canvas {
 	position: absolute;
 	top: 0;
@@ -44,6 +44,7 @@ canvas {
 	-ms-interpolation-mode: nearest-neighbor;
 }
 
+/* Transition */
 .transition {
 	position: absolute;
 	width: 100%;
@@ -58,28 +59,31 @@ canvas {
 	transform: translate(-50%, -1400px);
 }
 
+/* Windows */
 .window {
 	position: absolute;
-	display: flex;
-	background-color: #181526;
-	width: 640px;
-	height: 420px;
-	z-index: 1;
-	transition: opacity 1s;
-}
-#levels {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	background-color: #181526;
+	width: 640px;
+	height: 420px;
+	z-index: 1;
 	padding-top: 50px;
+	transition: opacity 1s;
 }
-#levels > h1 {
+.window > h1 {
 	position: absolute;
 	top: 30px;
 	font-size: 3rem;
 	text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000,
 		3px 3px 0 #000;
+}
+
+/* Levels */
+#levels {
+	display: flex;
 }
 .normal-levels {
 	display: grid;
@@ -141,6 +145,30 @@ canvas {
 	content: "* * *";
 }
 
+/* Scoreboard */
+#scoreboard > div {
+	width: 90%;
+	height: 280px;
+	overflow-y: auto;
+}
+.scoreboard-row {
+	display: grid;
+	grid-template-columns: 1fr 70px 70px;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.3);
+	margin: 10px 0;
+	color: white;
+}
+.scoreboard-row > span:last-of-type,
+.scoreboard-row > span:nth-of-type(2) {
+	text-align: right;
+}
+.scoreboard-row:first-of-type {
+	color: inherit;
+}
+
+/* Navigation */
 .navigation {
 	position: absolute;
 	display: flex;

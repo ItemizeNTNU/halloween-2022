@@ -80,9 +80,9 @@ const movesToStars = (level, moves) => {
 		13: [10, 20],
 	};
 	const stars = starMapping[level];
-	if (moves <= stars[0]) return "three";
-	else if (moves <= stars[1]) return "two";
-	else return "one";
+	if (moves <= stars[0]) return [3, "three"];
+	else if (moves <= stars[1]) return [2, "two"];
+	else return [1, "one"];
 };
 
 const app = express();
@@ -131,7 +131,7 @@ app.get("/api/levels", (req, res) => {
 	try {
 		let scores = db.prepare(query).all(user.id);
 		scores = scores.map((score) => {
-			return { ...score, stars: movesToStars(score.level, score.moves) };
+			return { ...score, stars: movesToStars(score.level, score.moves)[1] };
 		});
 		console.log(scores);
 		return res.json({
@@ -167,7 +167,33 @@ app.post("/api/levels/:level", (req, res) => {
 app.get("/api/scoreboard", (req, res) => {
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).send("Unauthorized");
-	return res.json({ scoreboard: [] });
+	const query =
+		"SELECT id, name, level, moves FROM users INNER JOIN scores ON users.id = scores.user_id;";
+	try {
+		const users = db.prepare(query).all();
+		const userIds = [...new Set(users.map((user) => user.id))];
+		console.log(users);
+		return res.json({
+			scoreboard: userIds.map((userId) => {
+				const user = { levels: 0, stars: 0 };
+				const userScores = users.filter((user) => user.id === userId);
+				for (const userScore of userScores) {
+					user.levels += 1;
+					user.stars += movesToStars(userScore.level, userScore.moves)[0];
+				}
+				return { name: userScores[0].name, ...user };
+			}),
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send("Could not retrieve scoreboard");
+	}
+});
+
+app.get("/api/flags", (req, res) => {
+	const user = parseAuth(req, res);
+	if (!user) res.status(401).send("Unauthorized");
+	return res.json({ flags: [] });
 });
 
 app.get("/api/skins", (req, res) => {
@@ -176,6 +202,7 @@ app.get("/api/skins", (req, res) => {
 	return res.json({ skins: [] });
 });
 app.post("/api/skins", (req, res) => {
+	const { skinId } = req.body;
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).send("Unauthorized");
 	return res.json({ skins: [] });
