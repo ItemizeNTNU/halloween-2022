@@ -31,6 +31,7 @@ const loadScoreboard = async () => {
 	scoreboardDiv.innerHTML = `
 			<div class="scoreboard-row">
 				<span>Name</span>
+				<span>Pumpkin</span>
 				<span>Cleared</span>
 				<span>Stars</span>
 			</div>
@@ -39,6 +40,7 @@ const loadScoreboard = async () => {
 		scoreboardDiv.innerHTML += `
 			<div class="scoreboard-row">
 				<span>${score.name}</span>
+				<span>${score.pumpkin}</span>
 				<span>${score.levels}</span>
 				<span>${score.stars}</span>
 			</div>

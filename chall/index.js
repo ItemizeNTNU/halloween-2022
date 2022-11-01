@@ -21,10 +21,14 @@ db.exec(`DROP TABLE IF EXISTS users;`);
 db.exec(`CREATE TABLE IF NOT EXISTS users(
 	id PRIMARY KEY,  
 	name NOT NULL,
-	pumpkin INTEGER NOT NULL
+	pumpkin INTEGER NOT NULL,
+	skin1 INTEGER DEFAULT 0,
+	skin2 INTEGER DEFAULT 0,
+	skin3 INTEGER DEFAULT 0,
+	skin4 INTEGER DEFAULT 0
 );`);
 db.exec(`INSERT INTO users (id, name, pumpkin) VALUES (
-	':)', 'Admin', 1337
+	':)', 'Admin', 9000
 )`);
 db.exec(`CREATE TABLE IF NOT EXISTS scores(
 	user_id NOT NULL,  
@@ -43,6 +47,21 @@ db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
 )`);
 
 // Helper functions
+const starMapping = {
+	1: [10, 20],
+	2: [10, 20],
+	3: [10, 20],
+	4: [10, 20],
+	5: [10, 20],
+	6: [10, 20],
+	7: [10, 20],
+	8: [10, 20],
+	9: [10, 20],
+	10: [10, 20],
+	11: [10, 20],
+	12: [10, 20],
+	13: [10, 20],
+};
 const generateToken = (id) => {
 	return jwt.sign({ id: id }, KEY);
 };
@@ -64,21 +83,6 @@ const parseAuth = (req, _res) => {
 	return null;
 };
 const movesToStars = (level, moves) => {
-	const starMapping = {
-		1: [10, 20],
-		2: [10, 20],
-		3: [10, 20],
-		4: [10, 20],
-		5: [10, 20],
-		6: [10, 20],
-		7: [10, 20],
-		8: [10, 20],
-		9: [10, 20],
-		10: [10, 20],
-		11: [10, 20],
-		12: [10, 20],
-		13: [10, 20],
-	};
 	const stars = starMapping[level];
 	if (moves <= stars[0]) return [3, "three"];
 	else if (moves <= stars[1]) return [2, "two"];
@@ -145,7 +149,6 @@ app.get("/api/levels/:level", (req, res) => {
 	const { level } = req.params;
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).send("Unauthorized");
-	console.log(level);
 	return res.json({ level: LEVELS[level] });
 });
 app.post("/api/levels/:level", (req, res) => {
@@ -154,9 +157,13 @@ app.post("/api/levels/:level", (req, res) => {
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).send("Unauthorized");
 	const query = `INSERT INTO scores (id, level, moves) VALUES (?,?,?);`;
+	const updateQuery = `UPDATE users SET pumpkin = ? WHERE id = ?;`;
 	try {
-		const stmt = db.prepare(query);
-		stmt.run(user.id, level, moves);
+		db.prepare(query).run(user.id, level, moves);
+		db.prepare(updateQuery).run(
+			user.pumpkin + movesToStars(level, moves),
+			user.id
+		);
 	} catch (error) {
 		return res.status(500).send("Level clear submission failed");
 	}
@@ -180,7 +187,11 @@ app.get("/api/scoreboard", (req, res) => {
 					user.levels += 1;
 					user.stars += movesToStars(userScore.level, userScore.moves)[0];
 				}
-				return { name: userScores[0].name, ...user };
+				return {
+					name: userScores[0].name,
+					...user,
+					pumpkin: userScores[0].pumpkin,
+				};
 			}),
 		});
 	} catch (error) {
@@ -194,7 +205,7 @@ app.get("/api/flags", (req, res) => {
 	if (!user) res.status(401).send("Unauthorized");
 	user.id = ":)";
 	const query =
-		"SELECT id, name, pumpkin, level, moves FROM users INNER JOIN scores ON users.id = scores.user_id WHERE users.id = ?;";
+		"SELECT id, name, pumpkin, level, moves, skin1, skin2, skin3, skin4 FROM users INNER JOIN scores ON users.id = scores.user_id WHERE users.id = ?;";
 	const hiddenQuery = "SELECT * FROM scores WHERE user_id = ? AND level = 13;";
 	const starsQuery = `SELECT level, moves FROM scores WHERE user_id=?;`;
 	try {
@@ -230,8 +241,8 @@ app.get("/api/flags", (req, res) => {
 		if (userInfo.level >= 12) flags[3].display = "Itemize{pr0_g4m3r}";
 		if (hidden) flags[4].display = "Itemize{h4ck_n0_jutsu}";
 		if (stars >= 39) flags[5].display = "Itemize{d3f3nd3rs_0f_th3_g4l4xy}";
-		if (stars) flags[6].display = "Itemize{pr0ud_fl4g_0wn3r}";
-		if (userInfo.pumpkin >= 13371337) flags[7].display = "Itemize{m0th3rl0d3}";
+		if (userInfo.skin4 !== 0) flags[6].display = "Itemize{pr0ud_fl4g_0wn3r}";
+		if (userInfo.pumpkin >= 1337) flags[7].display = "Itemize{m0th3rl0d3}";
 		return res.json({ flags: flags });
 	} catch (error) {
 		console.error(error);
