@@ -215,6 +215,6 @@ const draw = () => {
 	requestAnimationFrame(draw);
 };
 requestAnimationFrame(draw);
-changeWindow("shop-btn");
+changeWindow("menu-btn");
 reset.style.display = "none";
 await loadScores();

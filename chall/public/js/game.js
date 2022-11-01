@@ -16,6 +16,7 @@ export default class Game {
 		this.scroll = { x: 0, y: 0 };
 		this.transition = { element: transition, y: 200 };
 		this.loadedLevel = MAP;
+		this.moveCount = 0;
 	}
 
 	toggleTransition() {
@@ -28,9 +29,11 @@ export default class Game {
 	}
 
 	loadLevel(level) {
+		this.moveCount = 0;
 		this.loadedLevel = level;
 		const tiles = [];
 		const locations = [];
+		// Microban game map syntax
 		for (let y = 0; y < level.length; y++) {
 			for (let x = 0; x < level[y].length; x++) {
 				const tile = level[y][x];
@@ -71,8 +74,16 @@ export default class Game {
 		}
 		// Move
 		if (canMove) {
+			smoke({
+				x: this.player.x * TILE_SIZE + 20,
+				y: this.player.y * TILE_SIZE + 35,
+				size: 1,
+				amount: 30,
+				particleArr: this.particles,
+			});
 			this.player.x += px;
 			this.player.y += py;
+			this.moveCount++;
 		}
 	}
 
@@ -91,7 +102,7 @@ export default class Game {
 				x: box.x * TILE_SIZE + 20,
 				y: box.y * TILE_SIZE + 35,
 				size: 1,
-				amount: 50,
+				amount: 80,
 				particleArr: this.particles,
 			});
 			box.x += px;
@@ -103,6 +114,7 @@ export default class Game {
 	draw(ctx) {
 		// Clear screen
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
 		// Camera scroll
 		this.scroll.x = parseInt(
 			lerp(this.scroll.x, WIDTH / 2 - this.player.x * TILE_SIZE, 0.05)
@@ -111,11 +123,21 @@ export default class Game {
 			lerp(this.scroll.y, HEIGHT / 2 - this.player.y * TILE_SIZE, 0.05)
 		);
 		ctx.translate(this.scroll.x, this.scroll.y);
+
 		// Draw tiles
 		let correct = 0;
 		for (const location of this.locations) {
 			location.draw(ctx);
 		}
+
+		// Draw move count
+		ctx.font = "25px m6x11";
+		ctx.fillStyle = "#e3d7ad";
+		ctx.fillText(
+			`${this.moveCount}`,
+			this.player.x - this.scroll.x + 90,
+			this.player.y - this.scroll.y + 28
+		);
 
 		// Draw particles
 		for (let i = this.particles.length - 1; i >= 0; i--) {
