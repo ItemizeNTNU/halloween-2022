@@ -24,7 +24,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
 	pumpkin INTEGER NOT NULL
 );`);
 db.exec(`INSERT INTO users (id, name, pumpkin) VALUES (
-	':)', 'Jonny', 1337
+	':)', 'Admin', 1337
 )`);
 db.exec(`CREATE TABLE IF NOT EXISTS scores(
 	user_id NOT NULL,  
@@ -168,11 +168,10 @@ app.get("/api/scoreboard", (req, res) => {
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).send("Unauthorized");
 	const query =
-		"SELECT id, name, level, moves FROM users INNER JOIN scores ON users.id = scores.user_id;";
+		"SELECT id, name, pumpkin, level, moves FROM users INNER JOIN scores ON users.id = scores.user_id;";
 	try {
 		const users = db.prepare(query).all();
 		const userIds = [...new Set(users.map((user) => user.id))];
-		console.log(users);
 		return res.json({
 			scoreboard: userIds.map((userId) => {
 				const user = { levels: 0, stars: 0 };
@@ -193,7 +192,51 @@ app.get("/api/scoreboard", (req, res) => {
 app.get("/api/flags", (req, res) => {
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).send("Unauthorized");
-	return res.json({ flags: [] });
+	user.id = ":)";
+	const query =
+		"SELECT id, name, pumpkin, level, moves FROM users INNER JOIN scores ON users.id = scores.user_id WHERE users.id = ?;";
+	const hiddenQuery = "SELECT * FROM scores WHERE user_id = ? AND level = 13;";
+	const starsQuery = `SELECT level, moves FROM scores WHERE user_id=?;`;
+	try {
+		const userInfo = db.prepare(query).get(user.id);
+		const hidden = db.prepare(hiddenQuery).get(user.id);
+		let stars = db.prepare(starsQuery).all(user.id);
+		console.log(stars);
+		stars = stars
+			.map((score) => {
+				return movesToStars(score.level, score.moves)[0];
+			})
+			.reduce((a, b) => a + b);
+		const flags = [
+			{
+				flag: "Welcoming gift",
+				hint: "It's free",
+				display: "Itemize{sp00ky_h4ll0w33n}",
+			},
+			{ flag: "Truth seeker", hint: "Seek the source", display: "???" },
+			{ flag: "Normie", hint: "Clear 6 stages", display: "???" },
+			{ flag: "All clear", hint: "Clear 12 stages", display: "???" },
+			{ flag: "Shinobi", hint: "Clear the hidden level", display: "???" },
+			{ flag: "Star warrior", hint: "Collect all stars", display: "???" },
+			{
+				flag: "I am the flag",
+				hint: "Owner of an expensive skin",
+				display: "???",
+			},
+			{ flag: "Deep pocket", hint: "Richer than admin", display: "???" },
+		];
+		console.log(userInfo, hidden, stars);
+		if (userInfo.level >= 6) flags[2].display = "Itemize{th4t_w4s_34sy}";
+		if (userInfo.level >= 12) flags[3].display = "Itemize{pr0_g4m3r}";
+		if (hidden) flags[4].display = "Itemize{h4ck_n0_jutsu}";
+		if (stars >= 39) flags[5].display = "Itemize{d3f3nd3rs_0f_th3_g4l4xy}";
+		if (stars) flags[6].display = "Itemize{pr0ud_fl4g_0wn3r}";
+		if (userInfo.pumpkin >= 13371337) flags[7].display = "Itemize{m0th3rl0d3}";
+		return res.json({ flags: flags });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).send("Could not retrieve user flags");
+	}
 });
 
 app.get("/api/skins", (req, res) => {

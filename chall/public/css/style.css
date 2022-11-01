@@ -168,6 +168,34 @@ canvas {
 	color: inherit;
 }
 
+/* Flag */
+#flag > div {
+	width: 90%;
+	height: 280px;
+	overflow-y: auto;
+}
+.flag-row {
+	display: grid;
+	grid-template-columns: 120px 170px 1fr;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.3);
+	margin: 10px 0;
+	color: white;
+}
+.flag-row > span:last-of-type {
+	text-align: right;
+}
+.flag-row:not(:first-of-type) > span:last-of-type() {
+	color: #e2d7ad;
+}
+.flag-row:not(:first-of-type) > span:nth-of-type(2) {
+	opacity: 0.6;
+}
+.flag-row:first-of-type {
+	color: inherit;
+}
+
 /* Navigation */
 .navigation {
 	position: absolute;

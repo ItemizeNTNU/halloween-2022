@@ -46,6 +46,29 @@ const loadScoreboard = async () => {
 	}
 };
 
+// Flag window
+const loadFlags = async () => {
+	const flags = await fetchAsync("/api/flags");
+	console.log(flags);
+	const flagsDiv = document.querySelector("#flag > div");
+	flagsDiv.innerHTML = `
+			<div class="flag-row">
+				<span>Name</span>
+				<span>Hint</span>
+				<span>Flag</span>
+			</div>
+		`;
+	for (const flag of flags.flags) {
+		flagsDiv.innerHTML += `
+			<div class="flag-row">
+				<span>${flag.flag}</span>
+				<span>${flag.hint}</span>
+				<span>${flag.display}</span>
+			</div>
+		`;
+	}
+};
+
 // Shop window
 
 // Levels window
@@ -71,12 +94,15 @@ const changeWindow = async (btn) => {
 	if (btn === "menu-btn") {
 		window = document.querySelector("#levels");
 		await loadScores();
-	} else if (btn === "shop-btn") window = document.querySelector("#shop");
-	else if (btn === "scoreboard-btn") {
+	} else if (btn === "shop-btn") {
+		window = document.querySelector("#shop");
+	} else if (btn === "scoreboard-btn") {
 		window = document.querySelector("#scoreboard");
 		await loadScoreboard();
-	} else if (btn === "flag-btn") window = document.querySelector("#flag");
-	else {
+	} else if (btn === "flag-btn") {
+		window = document.querySelector("#flag");
+		await loadFlags();
+	} else {
 		if (btn === "levels-btn") canvas.style.opacity = 1;
 		navigationRight.style.display = "none";
 		return;
@@ -124,6 +150,6 @@ const draw = () => {
 	requestAnimationFrame(draw);
 };
 requestAnimationFrame(draw);
-changeWindow("scoreboard-btn");
+changeWindow("flag-btn");
 reset.style.display = "none";
 await loadScores();
