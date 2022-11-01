@@ -11,7 +11,7 @@ export default class Game {
 		this.tiles = [];
 		this.locations = [];
 		this.particles = [];
-		this.player = new Player(0, 0, TILE_SIZE, TILE_SIZE, "tomato");
+		this.player = new Player(0, 0, TILE_SIZE, TILE_SIZE, "tomato", globalUser);
 		this.loadLevel(MAP);
 		this.scroll = { x: 0, y: 0 };
 		this.transition = { element: transition, y: 200 };
@@ -36,7 +36,7 @@ export default class Game {
 				const tile = level[y][x];
 				if (tile === "@") {
 					// Player
-					this.player = new Player(x, y, TILE_SIZE, TILE_SIZE, "tomato");
+					this.player.spawn(x, y);
 				} else if (tile === "#") {
 					// Block
 					tiles.push(new Tile(x, y, TILE_SIZE, TILE_SIZE, "black"));

@@ -177,7 +177,7 @@ canvas {
 }
 .flag-row {
 	display: grid;
-	grid-template-columns: 120px 170px 1fr;
+	grid-template-columns: 150px 150px 1fr;
 	padding: 10px;
 	border-radius: 5px;
 	background-color: rgba(0, 0, 0, 0.3);
@@ -195,6 +195,100 @@ canvas {
 }
 .flag-row:first-of-type {
 	color: inherit;
+}
+
+/* Shop */
+.skins {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 20px;
+	margin-bottom: 10px;
+}
+.skin-btn {
+	width: 100px;
+	height: 100px;
+	border: none;
+	display: flex;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+	font-family: var(--font);
+	font-size: 2rem;
+	background-image: url("/images/button.png");
+	background-color: transparent;
+	background-size: 100% 100%;
+	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: crisp-edges;
+	transition: filter 0.2s;
+	cursor: pointer;
+	color: #e3d6ad;
+	z-index: 1;
+	--skin-cost: "???";
+}
+.skin-btn::before {
+	content: "";
+	filter: brightness(2) grayscale(0.3);
+	background-image: url(/images/skins.png);
+	background-color: transparent;
+	background-size: 300px 60px;
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	width: 60px;
+	height: 60px;
+}
+.skin-btn:nth-of-type(2)::before {
+	background-position: -60px 0;
+}
+.skin-btn:nth-of-type(3)::before {
+	background-position: -120px 0;
+}
+.skin-btn:nth-of-type(4)::before {
+	background-position: -180px 0;
+}
+.skin-btn::after {
+	content: var(--skin-cost);
+	position: absolute;
+	bottom: -30px;
+	font-size: 1.3rem;
+}
+.skins .selected {
+	box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+#shoppumpkin {
+	position: absolute;
+	top: 85px;
+	color: #e2d7ad;
+	font-size: 1.5rem;
+}
+#shop button:hover {
+	filter: brightness(0.7);
+}
+#shop button:active {
+	filter: brightness(0.5);
+}
+.shop {
+	margin: 15px;
+}
+.shop > .shop-btn {
+	width: 300px;
+	height: 50px;
+	margin: 5px 0;
+	padding: 10px;
+	color: white;
+	font-family: var(--font);
+	font-size: 1.3rem;
+	position: absolute;
+	background-image: url("/images/largebutton.png") !important;
+	background-color: transparent;
+	background-size: 100% 100%;
+	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: crisp-edges;
+	left: 50%;
+	bottom: 15px;
+	transform: translate(-50%, -50%);
+	border: none;
 }
 
 /* Navigation */

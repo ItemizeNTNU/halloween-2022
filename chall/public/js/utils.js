@@ -8,10 +8,14 @@ export const getRGBColor = (color) => {
 	}
 	return color;
 };
-export const fetchAsync = async (url, method = "GET") => {
-	const response = await fetch(url, {
+export const fetchAsync = async (url, method = "GET", data = {}) => {
+	const init = {
 		method: method,
-	});
-	const data = await response.json();
-	return data;
+	};
+	if (method === "POST" || method === "PUT") {
+		init.headers = { "Content-Type": "application/json" };
+		init.body = JSON.stringify(data);
+	}
+	const response = await fetch(url, init);
+	return await response.json();
 };

@@ -6,6 +6,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Halloween 2022 - sokoban game</title>
 		<link rel="stylesheet" href="/css/style.css" />
+		<% if (user) { %>
+			<script>
+				window.globalUser = <%- JSON.stringify(user) %>;
+			</script>
+		<% } %>
 	</head>
 
 	<body>
@@ -37,6 +42,17 @@
 					</div>
 					<div class="window" id="shop">
 						<h1>Shop</h2>
+						<p id="shoppumpkin">???</p>
+						<div class="skins">
+							<button class="skin-btn selected"></button>
+							<button class="skin-btn"></button>
+							<button class="skin-btn"></button>
+							<button class="skin-btn"></button>
+						</div>
+						<div class="shop">
+							<button class="shop-btn" id="buyskin">Buy</button>
+							<button class="shop-btn" id="useskin">Use</button>
+						</div>
 					</div>
 					<div class="window" id="levels">
 						<h1>Levels</h2>

@@ -2,6 +2,7 @@ import Game from "./game.js";
 import { fetchAsync } from "./utils.js";
 
 const interact = { button: true, timeout: 1300 };
+const skinSelection = { selected: 0 };
 
 // Game window
 const ctx = canvas.getContext("2d");
@@ -72,6 +73,67 @@ const loadFlags = async () => {
 };
 
 // Shop window
+const skinButtons = document.querySelectorAll(".skin-btn");
+const resetSkinButtons = () => {
+	for (const skinButton of skinButtons) {
+		skinButton.className = `skin-btn`;
+	}
+};
+const loadSkins = async () => {
+	const skins = await fetchAsync("/api/skins");
+	console.log(skins);
+	game.player.loadUserData({
+		...skins,
+		skin1: skins.skinStatus[0],
+		skin2: skins.skinStatus[1],
+		skin3: skins.skinStatus[2],
+		skin4: skins.skinStatus[3],
+	});
+	shoppumpkin.innerHTML = `${skins.pumpkin}🎃`;
+	for (let i = 0; i < skinButtons.length; i++) {
+		const btn = skinButtons[i];
+		btn.className = `skin-btn`;
+		if (skins.skinStatus[i] === 0)
+			btn.style = `--skin-cost: "${skins.skins[i + 1].cost}🎃"`;
+		else btn.style = `--skin-cost: ""`;
+
+		if (skins.enabled_skin - 1 === i) {
+			btn.className = `skin-btn selected`;
+			btn.style = `--skin-cost: "^"`;
+			skinSelection.selected = skins.enabled_skin;
+		}
+		btn.addEventListener("click", function () {
+			resetSkinButtons();
+			this.className = `skin-btn selected`;
+			skinSelection.selected = i + 1;
+			if (skins.skinStatus[i] === 0) {
+				buyskin.style.display = "block";
+				useskin.style.display = "none";
+			} else {
+				buyskin.style.display = "none";
+				useskin.style.display = "block";
+			}
+		});
+	}
+};
+buyskin.addEventListener("click", async () => {
+	console.log("use");
+	const skins = await fetchAsync("/api/skins", "POST", {
+		skinId: skinSelection.selected,
+	});
+	skinSelection.selected = skins.enabled_skin;
+	await loadSkins();
+});
+useskin.addEventListener("click", async () => {
+	console.log("use");
+	if (game.player.enabled_skin != skinSelection.selected) {
+		const skins = await fetchAsync("/api/skins", "PUT", {
+			skinId: skinSelection.selected,
+		});
+		game.player.enabled_skin = skins.enabled_skin;
+		await loadSkins();
+	}
+});
 
 // Levels window
 const levelButtons = document.querySelectorAll(
@@ -98,6 +160,7 @@ const changeWindow = async (btn) => {
 		await loadScores();
 	} else if (btn === "shop-btn") {
 		window = document.querySelector("#shop");
+		await loadSkins();
 	} else if (btn === "scoreboard-btn") {
 		window = document.querySelector("#scoreboard");
 		await loadScoreboard();
@@ -152,6 +215,6 @@ const draw = () => {
 	requestAnimationFrame(draw);
 };
 requestAnimationFrame(draw);
-changeWindow("flag-btn");
+changeWindow("shop-btn");
 reset.style.display = "none";
 await loadScores();
