@@ -49,8 +49,8 @@ db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
 
 // Helper constants
 const starMapping = {
-	1: [10, 20],
-	2: [10, 20],
+	1: [33, 40],
+	2: [16, 26],
 	3: [10, 20],
 	4: [10, 20],
 	5: [10, 20],
@@ -163,15 +163,27 @@ app.post("/api/levels/:level", (req, res) => {
 	const { moves } = req.body;
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).json({ error: "Unauthorized" });
-	const query = `INSERT INTO scores (id, level, moves) VALUES (?,?,?);`;
-	const updateQuery = `UPDATE users SET pumpkin = ? WHERE id = ?;`;
+	if (!Object.keys(starMapping).includes("" + level))
+		return res.status(400).json({ error: "Value of level not found" });
+	// Check if level is cleared, insert if not
+	const selectQuery = `SELECT * from scores WHERE user_id = ? AND level = ?;`;
+	const insertQuery = `INSERT INTO scores (user_id, level, moves) VALUES (?,?,?);`;
+	const updateQuery = `UPDATE scores SET moves = ? WHERE user_id = ? AND level = ?;`;
+	const pumpkinQuery = `UPDATE users SET pumpkin = ? WHERE id = ?;`;
 	try {
-		db.prepare(query).run(user.id, level, moves);
-		db.prepare(updateQuery).run(
-			user.pumpkin + movesToStars(level, moves),
+		const cleared = db.prepare(selectQuery).get(user.id, level);
+		console.log(cleared, moves);
+		if (!cleared) {
+			db.prepare(insertQuery).run(user.id, level, moves);
+		} else if (cleared.moves > moves) {
+			db.prepare(updateQuery).run(moves, user.id, level);
+		}
+		db.prepare(pumpkinQuery).run(
+			user.pumpkin + movesToStars(level, moves)[0],
 			user.id
 		);
 	} catch (error) {
+		console.log(error);
 		return res.status(500).json({ error: "Level clear submission failed" });
 	}
 	console.log(level, moves);
@@ -211,7 +223,7 @@ app.get("/api/flags", (req, res) => {
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).json({ error: "Unauthorized" });
 	const query =
-		"SELECT id, name, pumpkin, level, moves, skin1, skin2, skin3, skin4 FROM users INNER JOIN scores ON users.id = scores.user_id WHERE users.id = ?;";
+		"SELECT id, name, pumpkin, COUNT(scores.level) as level, moves, skin1, skin2, skin3, skin4 FROM users INNER JOIN scores ON users.id = scores.user_id WHERE users.id = ?;";
 	const hiddenQuery = "SELECT * FROM scores WHERE user_id = ? AND level = 13;";
 	const starsQuery = `SELECT level, moves FROM scores WHERE user_id=?;`;
 	try {
@@ -231,9 +243,9 @@ app.get("/api/flags", (req, res) => {
 				display: "Itemize{sp00ky_h4ll0w33n}",
 			},
 			{ flag: "Truth seeker", hint: "Seek the source", display: "???" },
-			{ flag: "Normie", hint: "Clear 6 stages", display: "???" },
-			{ flag: "All clear", hint: "Clear 12 stages", display: "???" },
-			{ flag: "Shinobi", hint: "Clear the hidden level", display: "???" },
+			{ flag: "Gamer", hint: "Clear 6 stages", display: "???" },
+			{ flag: "L337 gamer", hint: "Clear 12 stages", display: "???" },
+			{ flag: "Shinobi", hint: "Clear the hidden stage", display: "???" },
 			{ flag: "Star warrior", hint: "Collect all stars", display: "???" },
 			{
 				flag: "All about the fashion",

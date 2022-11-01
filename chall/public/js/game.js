@@ -2,7 +2,7 @@ import Tile from "./tile.js";
 import Player from "./player.js";
 import Box from "./box.js";
 import Location from "./location.js";
-import { lerp } from "./utils.js";
+import { fetchAsync, lerp } from "./utils.js";
 import { smoke, energy } from "./particle.js";
 import { MAP, WIDTH, HEIGHT, TILE_SIZE } from "./constants.js";
 
@@ -12,11 +12,11 @@ export default class Game {
 		this.locations = [];
 		this.particles = [];
 		this.player = new Player(0, 0, TILE_SIZE, TILE_SIZE, "tomato", globalUser);
-		this.loadLevel(MAP);
+		this.loadLevel(MAP, 1);
 		this.scroll = { x: 0, y: 0 };
 		this.transition = { element: transition, y: 200 };
-		this.loadedLevel = MAP;
 		this.moveCount = 0;
+		this.levelCleared = false;
 	}
 
 	toggleTransition() {
@@ -25,12 +25,14 @@ export default class Game {
 	}
 
 	reset() {
-		this.loadLevel(this.loadedLevel);
+		this.loadLevel(this.loadedLevel, this.loadedLevelId);
 	}
 
-	loadLevel(level) {
+	loadLevel(level, levelId) {
 		this.moveCount = 0;
 		this.loadedLevel = level;
+		this.loadedLevelId = levelId;
+		this.levelCleared = false;
 		const tiles = [];
 		const locations = [];
 		// Microban game map syntax
@@ -162,8 +164,14 @@ export default class Game {
 			}
 		}
 		// Check win condition
-		if (correct === this.locations.length) {
+		if (correct === this.locations.length && !this.levelCleared) {
 			console.log("WIN");
+			this.levelCleared = true;
+			fetchAsync(`/api/levels/${this.loadedLevelId}`, "POST", {
+				moves: this.moveCount,
+			}).then((data) => {
+				console.log(data);
+			});
 		}
 
 		// Transition

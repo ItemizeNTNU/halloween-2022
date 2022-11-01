@@ -136,14 +136,13 @@ useskin.addEventListener("click", async () => {
 });
 
 // Levels window
-const levelButtons = document.querySelectorAll(
-	"button.level-btn:not(.disabled)"
-);
+const levelButtons = document.querySelectorAll("button.level-btn");
 const loadScores = async () => {
 	const scores = await fetchAsync("/api/levels");
 	for (const score of scores.levels) {
 		levelButtons[score.level - 1].className = `level-btn ${score.stars}`;
 	}
+	levelButtons[12].classList.add("disabled");
 };
 const changeWindow = async (btn) => {
 	// Hide all window
@@ -182,6 +181,7 @@ const changeWindow = async (btn) => {
 for (let i = 0; i < levelButtons.length; i++) {
 	const button = levelButtons[i];
 	button.addEventListener("click", async () => {
+		if (i === 12) return;
 		if (!interact.button) return;
 		const data = await fetchAsync(`/api/levels/${i + 1}`);
 		console.log(i + 1, data);
@@ -189,7 +189,7 @@ for (let i = 0; i < levelButtons.length; i++) {
 			reset.style.display = "block";
 			changeWindow("levels-btn");
 		}, 800);
-		game.loadLevel(data.level);
+		game.loadLevel(data.level, i + 1);
 		game.toggleTransition();
 		interact.button = false;
 		setTimeout(() => (interact.button = true), interact.timeout);
