@@ -125,8 +125,8 @@ app.get("/", (req, res) => {
 		)`);
 		res.cookie("auth", generateToken(id));
 	}
-	//return res.render("index");
-	return res.render("game", { user: user });
+	return res.render("index");
+	//return res.render("game", { user: user });
 });
 
 app.get("/game", (req, res) => {
