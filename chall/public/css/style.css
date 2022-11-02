@@ -36,6 +36,7 @@ html {
 	align-items: center;
 	justify-content: center;
 	height: 100vh;
+	transform: translateY(-40px);
 }
 .title {
 	width: 90%;
@@ -72,6 +73,9 @@ button {
 }
 .index-btn:active {
 	filter: brightness(0.5) hue-rotate(30deg);
+}
+.tutorial {
+	color: #e3d6ad;
 }
 
 /* Canvas */

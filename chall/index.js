@@ -273,7 +273,7 @@ app.get("/api/flags", (req, res) => {
 				hint: "It's free",
 				display: "Itemize{sp00ky_hall0w33n}",
 			},
-			{ flag: "Truth seeker", hint: "Seek the source", display: "???" },
+			{ flag: "Truth seeker", hint: "Seek the source", display: "?&nbsp;" },
 			{ flag: "Gamer", hint: "Clear 6 stages", display: "???" },
 			{ flag: "L337 gamer", hint: "Clear 12 stages", display: "???" },
 			{ flag: "Shinobi", hint: "Clear the hidden stage", display: "???" },
@@ -284,7 +284,7 @@ app.get("/api/flags", (req, res) => {
 				display: "???",
 			},
 			{ flag: "Deep pocket", hint: "Richer than admin", display: "???" },
-			{ flag: "Easter egg", hint: "LvL. 1337", display: "???" },
+			{ flag: "Easter egg", hint: "LvL. 1337", display: "?&nbsp;" },
 		];
 		console.log(user, userInfo, hidden, stars);
 		if (userInfo) {

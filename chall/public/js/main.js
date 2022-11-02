@@ -212,13 +212,25 @@ for (let i = 0; i < levelButtons.length; i++) {
 // Game loop
 const keyDownHandler = (event) => {
 	if (interact.window !== "levels-btn") return;
-	if (event.key === "ArrowLeft" || event.key === "a") {
+	if (event.key === "ArrowLeft" || event.key === "a" || event.key === "h") {
 		game.movePlayer(-1, 0);
-	} else if (event.key === "ArrowUp" || event.key === "w") {
+	} else if (
+		event.key === "ArrowUp" ||
+		event.key === "w" ||
+		event.key === "k"
+	) {
 		game.movePlayer(0, -1);
-	} else if (event.key === "ArrowRight" || event.key === "d") {
+	} else if (
+		event.key === "ArrowRight" ||
+		event.key === "d" ||
+		event.key === "l"
+	) {
 		game.movePlayer(1, 0);
-	} else if (event.key === "ArrowDown" || event.key === "s") {
+	} else if (
+		event.key === "ArrowDown" ||
+		event.key === "s" ||
+		event.key === "j"
+	) {
 		game.movePlayer(0, 1);
 	} else if (event.key === "r") {
 		if (!interact.button) return;
