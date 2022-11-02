@@ -137,16 +137,6 @@ export default class Game {
 			lerp(this.scroll.y, HEIGHT / 2 - this.player.y * TILE_SIZE, 0.05)
 		);
 		ctx.translate(this.scroll.x, this.scroll.y);
-
-		// Draw move count
-		ctx.font = "25px m6x11";
-		ctx.fillStyle = "#e3d7ad";
-		ctx.fillText(
-			`${this.moveCount}`,
-			this.player.x - this.scroll.x + 90,
-			this.player.y - this.scroll.y + 28
-		);
-
 		// Draw tiles
 		let correct = 0;
 		for (const location of this.locations) {
@@ -169,12 +159,21 @@ export default class Game {
 						x: tile.x * TILE_SIZE + 20,
 						y: tile.y * TILE_SIZE + 20,
 						size: 0.1,
-						amount: 25,
+						amount: 15,
 						particleArr: this.particles,
 					});
 				}
 			}
 		}
+		// Draw move count
+		ctx.font = "25px m6x11";
+		ctx.fillStyle = "#e3d7ad";
+		ctx.fillText(
+			`${this.moveCount}`,
+			this.player.x - this.scroll.x + 90,
+			this.player.y - this.scroll.y + 28
+		);
+
 		// Check win condition
 		if (correct === this.locations.length && !this.levelCleared) {
 			console.log("WIN");

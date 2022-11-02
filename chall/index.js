@@ -30,38 +30,43 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
 	skin3 INTEGER DEFAULT 0,
 	skin4 INTEGER DEFAULT 0
 );`);
-if (DEBUG)
-	db.exec(`INSERT INTO users (id, name, pumpkin) VALUES (
-	':)', 'Admin', 666
-)`);
 db.exec(`CREATE TABLE IF NOT EXISTS scores(
 	user_id NOT NULL,  
 	level INTEGER NOT NULL,
 	moves INTEGER NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES users (id) 
 );`);
-if (DEBUG) {
-	const insert = db.prepare(
-		"INSERT INTO scores (user_id, level, moves) VALUES (':)', @level, @moves)"
-	);
-	const insertMany = db.transaction((scores) => {
-		for (const score of scores) insert.run(score);
-	});
-	insertMany([
-		{ level: 1, moves: 1 },
-		{ level: 2, moves: 1 },
-		{ level: 3, moves: 1 },
-		{ level: 4, moves: 1 },
-		{ level: 5, moves: 1 },
-		{ level: 6, moves: 1 },
-		{ level: 7, moves: 1 },
-		{ level: 8, moves: 1 },
-		{ level: 9, moves: 1 },
-		{ level: 10, moves: 1 },
-		{ level: 11, moves: 1 },
-		{ level: 12, moves: 1 },
-		{ level: 13, moves: 1 },
-	]);
+const query = `SELECT id, pumpkin, enabled_skin, skin1, skin2, skin3, skin4 FROM users WHERE id = ':)';`;
+try {
+	const user = db.prepare(query).get();
+	if (!user) {
+		db.exec(
+			`INSERT INTO users (id, name, pumpkin) VALUES (':)', 'Admin', 666)`
+		);
+		const insert = db.prepare(
+			"INSERT INTO scores (user_id, level, moves) VALUES (':)', @level, @moves)"
+		);
+		const insertMany = db.transaction((scores) => {
+			for (const score of scores) insert.run(score);
+		});
+		insertMany([
+			{ level: 1, moves: 1 },
+			{ level: 2, moves: 1 },
+			{ level: 3, moves: 1 },
+			{ level: 4, moves: 1 },
+			{ level: 5, moves: 1 },
+			{ level: 6, moves: 1 },
+			{ level: 7, moves: 1 },
+			{ level: 8, moves: 1 },
+			{ level: 9, moves: 1 },
+			{ level: 10, moves: 1 },
+			{ level: 11, moves: 1 },
+			{ level: 12, moves: 1 },
+			{ level: 13, moves: 1 },
+		]);
+	}
+} catch (error) {
+	console.log(error);
 }
 
 // Helper constants
@@ -76,9 +81,10 @@ const starMapping = {
 	8: [115, 125],
 	9: [30, 40],
 	10: [91, 101],
-	11: [80, 90],
-	12: [56, 66],
-	13: [63, 73],
+	11: [10, 20],
+	12: [100, 110],
+	13: [282, 292],
+	1337: [0, 0],
 };
 const skins = {
 	1: { skinOffset: 0, cost: 50 },
@@ -278,6 +284,7 @@ app.get("/api/flags", (req, res) => {
 				display: "???",
 			},
 			{ flag: "Deep pocket", hint: "Richer than admin", display: "???" },
+			{ flag: "Easter egg", hint: "LvL. 1337", display: "???" },
 		];
 		console.log(user, userInfo, hidden, stars);
 		if (userInfo) {
