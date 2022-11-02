@@ -41,15 +41,27 @@ db.exec(`CREATE TABLE IF NOT EXISTS scores(
 	FOREIGN KEY (user_id) REFERENCES users (id) 
 );`);
 if (DEBUG) {
-	db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
-	':)', 1, 15
-)`);
-	db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
-	':)', 2, 300
-)`);
-	db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
-	':)', 3, 0
-)`);
+	const insert = db.prepare(
+		"INSERT INTO scores (user_id, level, moves) VALUES (':)', @level, @moves)"
+	);
+	const insertMany = db.transaction((scores) => {
+		for (const score of scores) insert.run(score);
+	});
+	insertMany([
+		{ level: 1, moves: 1 },
+		{ level: 2, moves: 1 },
+		{ level: 3, moves: 1 },
+		{ level: 4, moves: 1 },
+		{ level: 5, moves: 1 },
+		{ level: 6, moves: 1 },
+		{ level: 7, moves: 1 },
+		{ level: 8, moves: 1 },
+		{ level: 9, moves: 1 },
+		{ level: 10, moves: 1 },
+		{ level: 11, moves: 1 },
+		{ level: 12, moves: 1 },
+		{ level: 13, moves: 1 },
+	]);
 }
 
 // Helper constants
@@ -207,8 +219,8 @@ app.get("/api/scoreboard", (req, res) => {
 	try {
 		const users = db.prepare(query).all();
 		const userIds = [...new Set(users.map((user) => user.id))];
-		return res.json({
-			scoreboard: userIds.map((userId) => {
+		const data = userIds
+			.map((userId) => {
 				const user = { levels: 0, stars: 0 };
 				const userScores = users.filter((user) => user.id === userId);
 				for (const userScore of userScores) {
@@ -220,7 +232,11 @@ app.get("/api/scoreboard", (req, res) => {
 					...user,
 					pumpkin: userScores[0].pumpkin,
 				};
-			}),
+			})
+			.sort((a, b) => b.stars - a.stars);
+		console.log(data);
+		return res.json({
+			scoreboard: data,
 		});
 	} catch (error) {
 		console.log(error);
