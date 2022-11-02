@@ -1,0 +1,5 @@
+./chall/node_modules
+./chall/dist
+./chall/.gitignore
+./chall/.package-lock.json
+./chall/db.sqlite3

@@ -8,6 +8,13 @@ const bgAudio = new Audio("/music/background.mp3");
 bgAudio.loop = true;
 bgAudio.volume = 0.1;
 bgAudio.play();
+const buttonAudio = new Audio("/music/button.wav");
+buttonAudio.volume = 0.1;
+const playButtonAudio = () => {
+	buttonAudio.pause();
+	buttonAudio.currentTime = 0;
+	buttonAudio.play();
+};
 
 // Game window
 const ctx = canvas.getContext("2d");
@@ -26,6 +33,7 @@ for (const button of navigationButtons) {
 		} else changeWindow(button.className);
 		interact.button = false;
 		setTimeout(() => (interact.button = true), interact.timeout);
+		playButtonAudio();
 	});
 }
 
@@ -115,6 +123,7 @@ const loadSkins = async () => {
 				buyskin.style.display = "none";
 				useskin.style.display = "block";
 			}
+			playButtonAudio();
 		});
 	}
 };
@@ -124,6 +133,7 @@ buyskin.addEventListener("click", async () => {
 	});
 	skinSelection.selected = skins.enabled_skin;
 	await loadSkins();
+	playButtonAudio();
 });
 useskin.addEventListener("click", async () => {
 	if (game.player.enabled_skin != skinSelection.selected) {
@@ -132,6 +142,7 @@ useskin.addEventListener("click", async () => {
 		});
 		game.player.enabled_skin = skins.enabled_skin;
 		await loadSkins();
+		playButtonAudio();
 	}
 });
 
@@ -194,6 +205,7 @@ for (let i = 0; i < levelButtons.length; i++) {
 		interact.button = false;
 		setTimeout(() => (interact.button = true), interact.timeout);
 		if (bgAudio.paused) bgAudio.play();
+		playButtonAudio();
 	});
 }
 
