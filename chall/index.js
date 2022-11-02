@@ -14,10 +14,12 @@ import {
 import LEVELS from "./map.js";
 
 const KEY = "BoOOoooOOOoOOoOoOOooooOOoooOOooOOOoooooOOooooooOOoooooOOOOoooOo";
+const DEBUG = Boolean(process.env.DEBUG);
+console.log("Debug mode:", DEBUG);
 const db = new Database("db.sqlite3");
 db.exec(`PRAGMA foreign_keys = ON;`);
-db.exec(`DROP TABLE IF EXISTS scores;`);
-db.exec(`DROP TABLE IF EXISTS users;`);
+if (DEBUG) db.exec(`DROP TABLE IF EXISTS scores;`);
+if (DEBUG) db.exec(`DROP TABLE IF EXISTS users;`);
 db.exec(`CREATE TABLE IF NOT EXISTS users(
 	id PRIMARY KEY,  
 	name NOT NULL,
@@ -28,7 +30,8 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
 	skin3 INTEGER DEFAULT 0,
 	skin4 INTEGER DEFAULT 0
 );`);
-db.exec(`INSERT INTO users (id, name, pumpkin) VALUES (
+if (DEBUG)
+	db.exec(`INSERT INTO users (id, name, pumpkin) VALUES (
 	':)', 'Admin', 666
 )`);
 db.exec(`CREATE TABLE IF NOT EXISTS scores(
@@ -37,15 +40,17 @@ db.exec(`CREATE TABLE IF NOT EXISTS scores(
 	moves INTEGER NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES users (id) 
 );`);
-db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
+if (DEBUG) {
+	db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
 	':)', 1, 15
 )`);
-db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
+	db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
 	':)', 2, 300
 )`);
-db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
+	db.exec(`INSERT INTO scores (user_id, level, moves) VALUES (
 	':)', 3, 0
 )`);
+}
 
 // Helper constants
 const starMapping = {
