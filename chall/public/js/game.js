@@ -170,7 +170,10 @@ export default class Game {
 			fetchAsync(`/api/levels/${this.loadedLevelId}`, "POST", {
 				moves: this.moveCount,
 			}).then((data) => {
-				console.log(data);
+				if (data.success) {
+					setTimeout(() => this.toggleTransition(), 500);
+					setTimeout(() => this.changeWindow("menu-btn"), 600);
+				}
 			});
 		}
 

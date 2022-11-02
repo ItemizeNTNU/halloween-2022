@@ -27,7 +27,6 @@ for (const button of navigationButtons) {
 // Scoreboard window
 const loadScoreboard = async () => {
 	const scores = await fetchAsync("/api/scoreboard");
-	console.log(scores);
 	const scoreboardDiv = document.querySelector("#scoreboard > div");
 	scoreboardDiv.innerHTML = `
 			<div class="scoreboard-row">
@@ -52,7 +51,6 @@ const loadScoreboard = async () => {
 // Flag window
 const loadFlags = async () => {
 	const flags = await fetchAsync("/api/flags");
-	console.log(flags);
 	const flagsDiv = document.querySelector("#flag > div");
 	flagsDiv.innerHTML = `
 			<div class="flag-row">
@@ -81,7 +79,6 @@ const resetSkinButtons = () => {
 };
 const loadSkins = async () => {
 	const skins = await fetchAsync("/api/skins");
-	console.log(skins);
 	game.player.loadUserData({
 		...skins,
 		skin1: skins.skinStatus[0],
@@ -117,7 +114,6 @@ const loadSkins = async () => {
 	}
 };
 buyskin.addEventListener("click", async () => {
-	console.log("use");
 	const skins = await fetchAsync("/api/skins", "POST", {
 		skinId: skinSelection.selected,
 	});
@@ -125,7 +121,6 @@ buyskin.addEventListener("click", async () => {
 	await loadSkins();
 });
 useskin.addEventListener("click", async () => {
-	console.log("use");
 	if (game.player.enabled_skin != skinSelection.selected) {
 		const skins = await fetchAsync("/api/skins", "PUT", {
 			skinId: skinSelection.selected,
@@ -184,7 +179,6 @@ for (let i = 0; i < levelButtons.length; i++) {
 		if (i === 12) return;
 		if (!interact.button) return;
 		const data = await fetchAsync(`/api/levels/${i + 1}`);
-		console.log(i + 1, data);
 		setTimeout(() => {
 			reset.style.display = "block";
 			changeWindow("levels-btn");
@@ -216,5 +210,6 @@ const draw = () => {
 };
 requestAnimationFrame(draw);
 changeWindow("menu-btn");
+game.changeWindow = changeWindow;
 reset.style.display = "none";
 await loadScores();

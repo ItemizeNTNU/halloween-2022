@@ -1,3 +1,4 @@
+// Microban level 1 - test map
 export const MAP = `####
 # .#
 #  ###

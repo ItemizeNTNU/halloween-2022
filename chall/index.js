@@ -29,7 +29,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
 	skin4 INTEGER DEFAULT 0
 );`);
 db.exec(`INSERT INTO users (id, name, pumpkin) VALUES (
-	':)', 'Admin', 9000
+	':)', 'Admin', 666
 )`);
 db.exec(`CREATE TABLE IF NOT EXISTS scores(
 	user_id NOT NULL,  
@@ -67,7 +67,7 @@ const skins = {
 	1: { skinOffset: 0, cost: 50 },
 	2: { skinOffset: 1, cost: 100 },
 	3: { skinOffset: 2, cost: 100 },
-	4: { skinOffset: 3, cost: 300 },
+	4: { skinOffset: 3, cost: 150 },
 };
 // Helper functions
 const generateToken = (id) => {
@@ -154,6 +154,8 @@ app.get("/api/levels", (req, res) => {
 });
 app.get("/api/levels/:level", (req, res) => {
 	const { level } = req.params;
+	if (!Object.keys(starMapping).includes("" + level))
+		return res.status(400).json({ error: "Value of level not found" });
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).json({ error: "Unauthorized" });
 	return res.json({ level: LEVELS[level] });
@@ -163,6 +165,8 @@ app.post("/api/levels/:level", (req, res) => {
 	const { moves } = req.body;
 	const user = parseAuth(req, res);
 	if (!user) res.status(401).json({ error: "Unauthorized" });
+	if (isNaN(moves))
+		return res.status(400).json({ error: "Value of moves is not a number" });
 	if (!Object.keys(starMapping).includes("" + level))
 		return res.status(400).json({ error: "Value of level not found" });
 	// Check if level is cleared, insert if not
@@ -187,7 +191,7 @@ app.post("/api/levels/:level", (req, res) => {
 		return res.status(500).json({ error: "Level clear submission failed" });
 	}
 	console.log(level, moves);
-	return res.status(200).json({ error: "Level clear submitted" });
+	return res.status(200).json({ success: "Level clear submitted" });
 });
 
 app.get("/api/scoreboard", (req, res) => {
@@ -240,7 +244,7 @@ app.get("/api/flags", (req, res) => {
 			{
 				flag: "Welcoming gift",
 				hint: "It's free",
-				display: "Itemize{sp00ky_h4ll0w33n}",
+				display: "Itemize{sp00ky_hall0w33n}",
 			},
 			{ flag: "Truth seeker", hint: "Seek the source", display: "???" },
 			{ flag: "Gamer", hint: "Clear 6 stages", display: "???" },
@@ -256,12 +260,12 @@ app.get("/api/flags", (req, res) => {
 		];
 		console.log(user, userInfo, hidden, stars);
 		if (userInfo) {
-			if (userInfo.level >= 6) flags[2].display = "Itemize{th4t_w4s_34sy}";
-			if (userInfo.level >= 12) flags[3].display = "Itemize{pr0_g4m3r}";
-			if (userInfo.pumpkin >= 1337) flags[7].display = "Itemize{m0th3rl0d3}";
+			if (userInfo.level >= 6) flags[2].display = "Itemize{that_was_3asy}";
+			if (userInfo.level >= 12) flags[3].display = "Itemize{l337_gam3r}";
+			if (userInfo.pumpkin > 666) flags[7].display = "Itemize{m0th3rl0d3}";
 		}
-		if (hidden) flags[4].display = "Itemize{h4ck_n0_jutsu}";
-		if (stars >= 39) flags[5].display = "Itemize{d3f3nd3rs_0f_th3_g4l4xy}";
+		if (hidden) flags[4].display = "Itemize{hack_n0_jutsu}";
+		if (stars >= 39) flags[5].display = "Itemize{d3f3nd3rs_0f_th3_galaxy}";
 		if (
 			user.skin1 !== 0 &&
 			user.skin2 !== 0 &&
