@@ -1,8 +1,13 @@
 import Game from "./game.js";
 import { fetchAsync } from "./utils.js";
 
-const interact = { button: true, timeout: 1300 };
+const interact = { button: true, timeout: 1300, window: "menu-btn" };
+window.interact = interact;
 const skinSelection = { selected: 0 };
+const bgAudio = new Audio("/music/background.mp3");
+bgAudio.loop = true;
+bgAudio.volume = 0.1;
+bgAudio.play();
 
 // Game window
 const ctx = canvas.getContext("2d");
@@ -149,6 +154,7 @@ const changeWindow = async (btn) => {
 	canvas.style.opacity = 0;
 	// Show specific window
 	let window;
+	interact.window = btn;
 	if (btn === "menu-btn") {
 		window = document.querySelector("#levels");
 		await loadScores();
@@ -187,11 +193,13 @@ for (let i = 0; i < levelButtons.length; i++) {
 		game.toggleTransition();
 		interact.button = false;
 		setTimeout(() => (interact.button = true), interact.timeout);
+		if (bgAudio.paused) bgAudio.play();
 	});
 }
 
 // Game loop
 const keyDownHandler = (event) => {
+	if (interact.window !== "levels-btn") return;
 	if (event.key === "ArrowLeft" || event.key === "a") {
 		game.movePlayer(-1, 0);
 	} else if (event.key === "ArrowUp" || event.key === "w") {
@@ -200,6 +208,12 @@ const keyDownHandler = (event) => {
 		game.movePlayer(1, 0);
 	} else if (event.key === "ArrowDown" || event.key === "s") {
 		game.movePlayer(0, 1);
+	} else if (event.key === "r") {
+		if (!interact.button) return;
+		game.toggleTransition();
+		game.reset();
+		interact.button = false;
+		setTimeout(() => (interact.button = true), interact.timeout);
 	}
 };
 document.addEventListener("keydown", keyDownHandler, false);

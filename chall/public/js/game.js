@@ -17,6 +17,12 @@ export default class Game {
 		this.transition = { element: transition, y: 200 };
 		this.moveCount = 0;
 		this.levelCleared = false;
+		this.moveAudio = new Audio("/music/click.wav");
+		this.moveAudio.volume = 0.3;
+		this.boxAudio = new Audio("/music/box.wav");
+		this.boxAudio.volume = 0.1;
+		this.winAudio = new Audio("/music/win.wav");
+		this.winAudio.volume = 0.3;
 	}
 
 	toggleTransition() {
@@ -76,6 +82,9 @@ export default class Game {
 		}
 		// Move
 		if (canMove) {
+			this.moveAudio.pause();
+			this.moveAudio.currentTime = 0;
+			this.moveAudio.play();
 			smoke({
 				x: this.player.x * TILE_SIZE + 20,
 				y: this.player.y * TILE_SIZE + 35,
@@ -100,6 +109,9 @@ export default class Game {
 			}
 		}
 		if (canMove) {
+			this.boxAudio.pause();
+			this.boxAudio.currentTime = 0;
+			this.boxAudio.play();
 			smoke({
 				x: box.x * TILE_SIZE + 20,
 				y: box.y * TILE_SIZE + 35,
@@ -126,12 +138,6 @@ export default class Game {
 		);
 		ctx.translate(this.scroll.x, this.scroll.y);
 
-		// Draw tiles
-		let correct = 0;
-		for (const location of this.locations) {
-			location.draw(ctx);
-		}
-
 		// Draw move count
 		ctx.font = "25px m6x11";
 		ctx.fillStyle = "#e3d7ad";
@@ -140,6 +146,12 @@ export default class Game {
 			this.player.x - this.scroll.x + 90,
 			this.player.y - this.scroll.y + 28
 		);
+
+		// Draw tiles
+		let correct = 0;
+		for (const location of this.locations) {
+			location.draw(ctx);
+		}
 
 		// Draw particles
 		for (let i = this.particles.length - 1; i >= 0; i--) {
@@ -166,6 +178,8 @@ export default class Game {
 		// Check win condition
 		if (correct === this.locations.length && !this.levelCleared) {
 			console.log("WIN");
+			this.winAudio.load();
+			this.winAudio.play();
 			this.levelCleared = true;
 			fetchAsync(`/api/levels/${this.loadedLevelId}`, "POST", {
 				moves: this.moveCount,
